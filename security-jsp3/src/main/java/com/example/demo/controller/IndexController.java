@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.model.User;
 import com.example.demo.service.MemberService;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -36,30 +37,40 @@ public class IndexController {
     //@RestController = @Controller + @ResponseBody
     //@Controller를 사용하면 리턴값 String으로 화면 이름을 찾음.
     //그런데 @ResposeBody를 두면 평문으로 출력됨
+    @RolesAllowed("ROLE_USER")
     @GetMapping({"/user"})
-    public @ResponseBody String user(){//user Text로 응답, RestController처럼 사용가능
+    public String user(){
         log.info("user");
-        return "user";
+        return "redirect:/userPage.jsp";
     }//end of home
     //http://localhost:8000/manager
+    @RolesAllowed("ROLE_MANAGER")
     @GetMapping({"/manager"})
     public String manager(){
         log.info("manager");
-        return "manager";
+        return "redirect:/managerPage.jsp";
     }//end of home
     //http://localhost:8000/admin
+    @RolesAllowed("ROLE_ADMIN")
     @GetMapping({"/admin"})
     public String admin(){
         log.info("admin");
-        return "admin";
+        return "redirect:/adminPage.jsp";
     }//end of home
-    
-    //로그인화면 요청하기
+    /*
+    로그인에 대한 처리는 필터에서 전담해서 처리됨
+    절대로 아래와 같은 엔드포인트는 작성하지 말것.
+    @GetMapping("/loginProcess")//필요없다
+    public  @ResponseBody String loginProcess(){
+        return "login처리는 시큐리티 필터가 담당함.";
+    }
+    */
+    //로그인화면 요청하기/회원가입전 연결페이지로 권한 불필요
     //http://localhost:8000/loginForm
     @GetMapping("/loginForm")
     public String loginForm(){
         log.info("loginForm");
-        return "auth/loginForm";
+        return "redirect: /auth/loginForm.jsp";
     }//end of loginForm
     
     //회원가입화면 호출하기
@@ -70,14 +81,21 @@ public class IndexController {
         //auth/joinForm -> 응답페이지의 화면 이름이다.
         //yaml -> /WEB-INF/views/ 접두어
         //접미어   ->.jsp
-        return "auth/joinForm";
+        return "redirect: /auth/joinForm.jsp"; //ViewResolver가 관여하지 않음 /, .jsp 붙이기!
+    }
+    //접근 권한(403)이 없는 경우 처리하기
+    @GetMapping("/access-denied")
+    public String accessDenied(){
+        log.info("accessDenied");
+        //return "auth/accessDenied";//WEB-INF/views 아래서 찾음
+        return "redirect:/accessDenied.jsp";
     }
     //에러 페이지 호출하기
     //http://localhost:8000/login-error
     @GetMapping("/login-error")
     public @ResponseBody String loginError(){
         log.info("login-Error");
-        return "아이디나 비밀번호가 맞지 않습니다.";
+        return "redirect:/loginError.jsp";
     }
     //회원가입 구현하기
     @PostMapping("/join")
@@ -91,7 +109,7 @@ public class IndexController {
         //왜냐면 암호화가 되지 않은 비번에 대해서는 처리안됨
         user.setPassword(encPassword);
         memberService.memberInsert(user);
-        return "auth/loginForm";
+        return "redirect: /auth/loginForm.jsp"; //회원가입이 되면 이 요청을 보냄
 
     }
 }
