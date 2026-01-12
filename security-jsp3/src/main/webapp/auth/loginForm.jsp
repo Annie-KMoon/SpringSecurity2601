@@ -11,15 +11,15 @@ pageEncoding="UTF-8"%>
         document.getElementById("f_login").submit();
       };
       const joinForm = (event) => {
-        location.href = "joinForm";
+        location.href = "/joinForm";
       };
     </script>
   </head>
   <body>
     <h1>로그인 페이지{WEB-INF}</h1>
-    <h3>username:admin, password:111</h3>
-    <h3>username:user, password:111</h3>
-    <h3>username:manager, password:123(manager)</h3>
+    <h3>username:apple, password:123(admin)</h3>
+    <h3>username:kiwi, password:123(user)</h3>
+    <h3>username:tomato, password:123(manager)</h3>
     <form id="f_login" action="/loginProcess" method="post">
       <hr />
       <input type="text" name="username" placeholder="Username" /><br />
