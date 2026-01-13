@@ -1,11 +1,14 @@
 package com.example.demo.controller;
 
+import com.example.demo.config.auth.PrincipalDetails;
 import com.example.demo.model.User;
 import com.example.demo.service.MemberService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -42,6 +45,17 @@ public class IndexController {
         //@RestController = @Controller + @ResponseBody -> 문자열 포맷
         //@Controller => 문자열이 출력으로 나갈 화면 이름이다.
     }//end of home
+
+    @GetMapping("/info")
+    public @ResponseBody String info(Authentication authentication){
+        //세션정보를 Authentication이 쥐고 있다.
+        //Authentication 안에는 반드시 UserDetails 타입만 담을 수 있음
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+        log.info("username: "+ principalDetails.getUsername());
+        log.info("password: "+ principalDetails.getPassword());
+        log.info("email: "+ principalDetails.getEmail());
+        return "Authentication에서 꺼낸"+principalDetails.getUsername();
+    }
 
     //http://localhost:8000/user
     //@RestController = @Controller + @ResponseBody
